@@ -1,4 +1,4 @@
-# Twitch-Database-Project
+# Database Project
 
 ## Description
 Your task is to design and implement a database for an application similar to Twitch, a multimedia streaming platform. The database should manage information regarding users, streaming channels, archived videos, content categories, and user interactions (such as comments and likes).
