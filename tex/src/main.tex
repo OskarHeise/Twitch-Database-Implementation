@@ -1,0 +1,128 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{pgf}
+% \usepackage[condensed,math]{kurier}
+% \usepackage[T1]{fontenc}
+\usepackage{svg}
+\usepackage{tikz}
+\usepackage{stanli}
+\usepackage{afterpage}
+\usepackage{multirow}
+\usepackage{subfig}
+\usepackage{pgfpages}
+\usepackage{svg}
+\usepackage{rotating}
+\usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+\usepackage[a4paper, top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{boldline}
+\usepackage{pdflscape} % Required for landscape pages
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{svg} % Required for inserting images in svg format
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+% Definizione del colore blu per le parole chiave
+\definecolor{keywords}{RGB}{0,0,255}
+
+\lstset{
+    language=SQL,
+    basicstyle=\ttfamily,
+    keywordstyle=[1]\color{keywords},  % Colore per le parole chiave di tipo 1
+    morekeywords=[1]{IF, EXISTS, DATE_ADD, boolean},     % Aggiunta di parole chiave di tipo 1
+}
+
+\geometry{a4paper, margin=1in}
+\setlist{noitemsep}
+
+\renewcommand{\contentsname}{Indice} %cambiare nome alla table of content
+
+%\usepackage{times}
+
+
+\pgfpagesdeclarelayout{boxed}
+{
+	\edef\pgfpageoptionborder{0pt}
+}
+{
+	\pgfpagesphysicalpageoptions
+	{%
+		logical pages=1,%
+	}
+	\pgfpageslogicalpageoptions{1}
+	{
+		border code=\pgfsetlinewidth{2pt}\color{black}\pgfstroke,%
+		border shrink=\pgfpageoptionborder,%
+		resized width=.9\pgfphysicalwidth,%
+		resized height=.9\pgfphysicalheight,%
+		center=\pgfpoint{.5\pgfphysicalwidth}{.5\pgfphysicalheight}%
+	}%
+}
+
+%\pgfpagesuselayout{boxed}
+
+\begin{document}
+
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+ 
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+\textsc{\LARGE Università degli Studi di Torino}\\[1.5cm] % Name of your university/college
+\includegraphics[scale=.1]{unito informatica.jpg}\\[1cm] % Include a department/university logo - this will require the graphicx package
+\textsc{\Large Basi di Dati}\\[0.5cm] % Major heading such as course name
+\textsc{\large MFN0602}\\[0.5cm] % Minor heading such as course title
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\HRule \\[0.4cm]
+{ \huge \bfseries Progetto}\\[0.4cm] % Title of your document
+\HRule \\[1.5cm]
+ 
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+\begin{minipage}{0.4\textwidth}
+\begin{center} \large
+Oskar Heise\\ % Your name
+\end{center}
+
+\end{minipage}\\[2cm]
+
+% If you don't want a supervisor, uncomment the two lines below and remove the section above
+%\Large \emph{Author:}\\
+%John \textsc{Smith}\\[3cm] % Your name
+
+%----------------------------------------------------------------------------------------
+%	DATE SECTION
+%----------------------------------------------------------------------------------------
+
+{\large 2022/2023}\\[2cm] % Date, change the \today to a set date if you want to be precise
+
+\vfill % Fill the rest of the page with whitespace
+\end{titlepage}
+
+\newpage
+\tableofcontents
+\newpage
+\input{progettazione-concettuale}
+\newpage
+\input{progettazione-logica}
+\newpage
+\input{implementazione}
+
+
+\end{document}

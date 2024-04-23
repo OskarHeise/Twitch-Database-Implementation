@@ -1,0 +1,411 @@
+\section{Implementazione}
+\subsection{DDL di creazione del database}
+
+
+
+
+
+\begin{lstlisting}
+DROP TABLE IF EXISTS utente CASCADE;
+DROP TABLE IF EXISTS utenteAnonimo CASCADE;
+DROP TABLE IF EXISTS canale CASCADE;
+DROP TABLE IF EXISTS calendario CASCADE;
+DROP TABLE IF EXISTS contenuti CASCADE;
+DROP TABLE IF EXISTS chatPubblica CASCADE;
+DROP TABLE IF EXISTS chatPrivata CASCADE;
+DROP TABLE IF EXISTS subscription CASCADE;
+DROP TABLE IF EXISTS donazione CASCADE;
+DROP TABLE IF EXISTS guarda CASCADE;
+DROP TABLE IF EXISTS pubblica CASCADE;
+DROP TABLE IF EXISTS segue CASCADE;
+DROP TABLE IF EXISTS visualizza CASCADE;
+
+CREATE TABLE utente(
+    username varchar PRIMARY KEY,
+    email varchar DEFAULT NULL,
+    telefono varchar DEFAULT NULL,
+    dataNascita date NOT NULL,
+    password varchar NOT NULL,
+    spettatoriMedi integer DEFAULT 0,
+    minutiTrasmessi integer DEFAULT 0,
+    quantitaBit integer DEFAULT 0,
+    affiliato boolean DEFAULT false
+);
+
+CREATE TABLE calendario(
+    username varchar,
+    data date,
+    ora time,
+    titolo varchar NOT NULL,
+    PRIMARY KEY (username, data, ora)
+);
+
+CREATE TABLE utenteAnonimo(
+    sessionId varchar PRIMARY KEY
+);
+
+CREATE TABLE contenuti(
+    url varchar PRIMARY KEY,
+    nomeContentCreator varchar NOT NULL,
+    titolo varchar NOT NULL,
+    durata time NOT NULL,
+    categoria varchar NOT NULL,
+    tag varchar NOT NULL,
+    visualizzazioni integer DEFAULT 0,
+    tipologia varchar NOT NULL,
+    spettatoriSimultanei integer DEFAULT 0
+);
+
+CREATE TABLE chatPubblica(
+    orarioScrittura time,
+    utenteMittente varchar,
+    url varchar,
+    ricompenseChat varchar NOT NULL,
+    testoMessaggio varchar NOT NULL,
+    PRIMARY KEY (orarioScrittura, utenteMittente, url)
+);
+
+CREATE TABLE chatPrivata(
+    orarioScrittura time,
+    testoMessaggio varchar,
+    utenteMittente varchar,
+    utenteDestinatario varchar,
+    PRIMARY KEY (orarioScrittura, testoMessaggio, 
+    utenteMittente, utenteDestinatario)
+);
+
+CREATE TABLE canale(
+    username varchar PRIMARY KEY,
+    follower integer DEFAULT 0,
+    trailer varchar DEFAULT NULL,
+    immagineProfilo varchar DEFAULT NULL,
+    social varchar DEFAULT NULL,
+    descrizione varchar DEFAULT NULL
+);
+
+CREATE TABLE subscription(
+    subber varchar,
+    subbed varchar,
+    dataInizio date DEFAULT NULL,
+    dataFine date DEFAULT NULL,
+    emojiEsclusive varchar DEFAULT NULL,
+    PRIMARY KEY (subber, subbed)
+);
+
+CREATE TABLE donazione(
+    donatore varchar,
+    beneficiario varchar,
+    messaggio varchar DEFAULT NULL,
+    valore integer DEFAULT 0,
+    PRIMARY KEY (donatore, beneficiario)
+);
+
+CREATE TABLE guarda(
+    sessionID varchar,
+    url varchar,
+    PRIMARY KEY (sessionID, url)
+);
+
+CREATE TABLE segue(
+    seguace varchar,
+    seguito varchar,
+    PRIMARY KEY (seguace, seguito)
+);
+
+CREATE TABLE visualizza(
+    url varchar,
+    username varchar,
+    PRIMARY KEY (url, username)
+);
+
+
+
+ALTER TABLE calendario
+ADD FOREIGN KEY (username) REFERENCES utente (username) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE chatPubblica
+ADD FOREIGN KEY (utenteMittente) REFERENCES utente (username) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE chatPrivata
+ADD FOREIGN KEY (utenteMittente) REFERENCES utente (username) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE chatPrivata
+ADD FOREIGN KEY (utenteDestinatario) REFERENCES utente (username) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE canale
+ADD FOREIGN KEY (username) REFERENCES utente (username) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE subscription
+ADD FOREIGN KEY (subber) REFERENCES utente (username) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE subscription
+ADD FOREIGN KEY (subbed) REFERENCES utente (username) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE donazione
+ADD FOREIGN KEY (donatore) REFERENCES utente (username) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE donazione
+ADD FOREIGN KEY (beneficiario) REFERENCES utente (username) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE guarda
+ADD FOREIGN KEY (sessionId) REFERENCES utenteAnonimo (sessionId) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE guarda
+ADD FOREIGN KEY (url) REFERENCES contenuti (url) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE segue
+ADD FOREIGN KEY (seguace) REFERENCES utente (username) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE segue
+ADD FOREIGN KEY (seguito) REFERENCES utente (username) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE visualizza
+ADD FOREIGN KEY (url) REFERENCES contenuti (url) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE visualizza
+ADD FOREIGN KEY (username) REFERENCES utente (username) 
+ON DELETE CASCADE ON UPDATE CASCADE;
+\end{lstlisting}
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{DML di popolamento di tutte le tabelle del database}
+\begin{lstlisting}
+INSERT INTO utente VALUES ('oskar.heise',  'oskar@gmail.com', 
+'1234567890', '2002-12-18', 'P4ssw0rd??', 0, 0, 50, false);
+INSERT INTO utente VALUES ('mario.rossi', 'mario.rossi@gmail.com',
+'9876543210', '1995-05-22', 'M@rioP@ss!', 0, 0, 50, false);
+INSERT INTO utente VALUES ('laura.bianchi', 'lauri@yahoo.com',
+'7654321098', '1988-11-10', 'L@uraP@ss#', 0, 0, 50, false);
+INSERT INTO utente VALUES ('giuseppe.verdi', 'gius.verdi@hotmail.com',
+'8765432109', '1980-03-15', 'Giuseppe#123', 0, 0, 50, false);
+INSERT INTO utente VALUES ('francesca.rossini', 'fra.ross@gmail.com',
+'6543210987', '1992-07-03', 'Fr@ncescaPwd', 0, 0, 50, false);
+INSERT INTO utente VALUES ('marco.gallo', 'marco.gallo@gmail.com',
+'7890123456', '1985-09-28', 'M@rcoGallo!', 0, 0, 50, false);
+INSERT INTO utente VALUES ('anna.ferrari', 'anna.ferrari@yahoo.com',
+'8901234567', '1990-01-12', 'AnnaF3rr@ri', 0, 0, 50, false);
+INSERT INTO utente VALUES ('luca.martinelli', 'luca.ma@hotmail.com',
+'5678901234', '1987-04-08', 'Luca_M@rtin', 0, 0, 50, false);
+INSERT INTO utente VALUES ('simona.ricci', 'simona.ricci@gmail.com',
+'6789012345', '1983-06-20', 'Sim0naRicci*', 0, 0, 50, false);
+INSERT INTO utente VALUES ('paolo.colombo', 'paolo.colo@yahoo.com',
+'3456789012', '1998-02-25', 'Pa0loC0lomb0#', 0, 0, 50, false);
+INSERT INTO utente VALUES ('roberta.mazza', 'rob.mazza@hotmail.com',
+'4567890123', '1982-10-07', 'R0bertaM@zz@', 0, 0, 50, false);
+INSERT INTO utente VALUES ('andrea.romano', 'and.roma@gmail.com',
+'2345678901', '1993-12-30', 'Andr34R0mano$', 0, 0, 50, false);
+INSERT INTO utente VALUES ('elisa.rizzo', 'eli.rizzo@yahoo.com',
+'4321098765', '1989-08-18', '3lisaRizz0*', 0, 0, 50, false);
+INSERT INTO utente VALUES ('giorgio.conti', 'gio.con@hotmail.com',
+'3210987654', '1981-04-05', 'Gi0rgioC0nti!', 0, 0, 50, false);
+INSERT INTO utente VALUES ('veronica.santoro', 'vero.sant@gmail.com',
+'2109876543', '1996-06-15', 'V3ron!caS@nt0r0', 0, 0, 50, false);
+INSERT INTO utente VALUES ('davide.ferri', 'da.fer@yahoo.com',
+'1098765432', '1984-09-12', 'D@videF3rri#', 0, 0, 50, false);
+INSERT INTO utente VALUES ('sara.lombardi', 'sara.lomba@hotmail.com',
+'9012345678', '1991-11-28', 'S@raL0mbardi$', 0, 0, 50, false);
+INSERT INTO utente VALUES ('marcello.gatti', 'marce@gmail.com',
+'5432109876', '1986-02-14', 'M@rc3ll0G@tti', 0, 0, 50, false);
+INSERT INTO utente VALUES ('giulia.palumbo', 'giu.palu@yahoo.com',
+'6789012345', '1997-03-08', 'Giuli@P@lumb0', 0, 0, 50, false);
+INSERT INTO utente VALUES ('antonio.rocca', 'anto.rocca@hotmail.com',
+'1234567890', '1980-07-23', 'Ant0ni0R0cca*', 0, 0, 50, false);
+INSERT INTO utente VALUES ('eleonora.damico', 'ele.dami@gmail.com',
+'2345678901', '1994-05-18', 'El30n0raD@mico#', 0, 0, 50, false);
+INSERT INTO utente VALUES ('marco.ferretti', 'marco.ferre@yahoo.com',
+'9876543210', '1987-08-15', 'M@rcoFerr3tti#', 0, 0, 50, false);
+INSERT INTO utente VALUES ('silvia.monti', 'silviam@hotmail.com',
+'8765432109', '1995-02-02', 'S!lviaM0nti*', 0, 0, 50, false);
+INSERT INTO utente VALUES ('andrea.palazzi', 'andr.pala@gmail.com',
+'7654321098', '1983-11-20', 'Andr3aP@l@zzi!', 0, 0, 50, false);
+INSERT INTO utente VALUES ('valentina.battaglia', 'valenb@yahoo.com',
+'6543210987', '1990-04-12', 'V@l3ntinaB#tt@glia', 0, 0, 50, false);
+INSERT INTO utente VALUES ('gianni.moretti', 'giannim@gmail.com',
+'8901234567', '1982-06-25', 'Gi@nniM0rett!$', 0, 0, 50, false);
+INSERT INTO utente VALUES ('francesca.ferri', 'fra.fe@hotmail.com',
+'5678901234', '1991-09-18', 'Fr@nc3scaF3rri#', 0, 0, 50, false);
+INSERT INTO utente VALUES ('luca.ricci', 'luca.ricci@yahoo.com',
+'6789012345', '1988-03-03', 'L#caR1cci*', 0, 0, 50, false);
+INSERT INTO utente VALUES ('anna.martini', 'ann.marti@gmail.com',
+'3456789012', '1996-07-22', 'AnnaM@rtini123', 0, 0, 50, false);
+INSERT INTO utente VALUES ('marco.rossi', 'marco.rossi@hotmail.com',
+'4567890123', '1985-12-10', 'M@rcoR0ss!123', 0, 0, 50, false);
+INSERT INTO utente VALUES ('elena.galli', 'ele.gal@yahoo.com',
+'2345678901', '1993-01-28', '3lenaG@lli#', 0, 0, 50, false);
+
+
+INSERT INTO utente VALUES ('ninja', 'ninja@gmail.com', '9876543210', 
+'1991-06-05', 'N!nj@P@ss123', 2000, 1000, 500, true);
+INSERT INTO utente VALUES ('shroud', 'shroud@yahoo.com', '8765432109',
+'1994-11-02', 'Shr0ud#987', 1500, 1000, 250, true);
+INSERT INTO utente VALUES ('tfue', 'tfue@hotmail.com', '7654321098',
+'1997-01-02', 'TfueP@ss!321', 1800, 1200, 400, true);
+INSERT INTO utente VALUES ('xqcow', 'xqcow@hotmail.com', '5678901234',
+'1996-11-12', 'XqC0wP@ss#', 2500, 1000,  650, true);
+INSERT INTO utente VALUES ('lirik', 'lirik@gmail.com', '6789012345',
+'1990-10-29', 'L!r!kP@ss456', 800, 1200, 100, false);
+
+
+INSERT INTO calendario VALUES ('ninja', '2024-11-14', 
+'20:00:00', 'NuovaLive');
+
+INSERT INTO utenteAnonimo VALUES ('ajkdsfh7819');
+INSERT INTO utenteAnonimo VALUES ('jasdksd1617');
+
+INSERT INTO contenuti VALUES ('www.twitch.tv/videos/1887789454',
+'ninja', 'TalkShow', '02:00:12', 'JustChatting', 
+'QuattroChiacchiere', 0, 'Live streaming', 1200);
+INSERT INTO contenuti VALUES ('www.twitch.tv/videos/1844449454', 
+'tfue', 'Gaming', '02:00:12', 'Gaming', 'Giochiamo',
+1500, 'VOD', 0);
+INSERT INTO contenuti VALUES ('www.twitch.tv/videos/1823349454', 
+'tfue', 'Gaming', '00:00:15', 'Gaming', 'Giochiamo',
+300, 'clip', 0);
+
+INSERT INTO chatPubblica VALUES ('00:30:23', 'oskar.heise',
+'www.twitch.tv/videos/1887789454', 0, 'Buonasera');
+
+INSERT INTO chatPrivata VALUES ('12:30:00', 'ciao!', 'oskar.heise', 
+'davide.ferri');
+\end{lstlisting}
+
+\begin{lstlisting}
+INSERT INTO canale VALUES ('oskar.heise');
+INSERT INTO canale VALUES ('mario.rossi');
+INSERT INTO canale VALUES ('laura.bianchi');
+INSERT INTO canale VALUES ('giuseppe.verdi');
+INSERT INTO canale VALUES ('francesca.rossini');
+INSERT INTO canale VALUES ('marco.gallo');
+INSERT INTO canale VALUES ('anna.ferrari');
+INSERT INTO canale VALUES ('luca.martinelli');
+INSERT INTO canale VALUES ('simona.ricci');
+INSERT INTO canale VALUES ('paolo.colombo');
+INSERT INTO canale VALUES ('roberta.mazza');
+INSERT INTO canale VALUES ('andrea.romano');
+INSERT INTO canale VALUES ('elisa.rizzo');
+INSERT INTO canale VALUES ('giorgio.conti');
+INSERT INTO canale VALUES ('veronica.santoro');
+INSERT INTO canale VALUES ('davide.ferri');
+INSERT INTO canale VALUES ('sara.lombardi');
+INSERT INTO canale VALUES ('marcello.gatti');
+INSERT INTO canale VALUES ('giulia.palumbo');
+INSERT INTO canale VALUES ('antonio.rocca');
+INSERT INTO canale VALUES ('eleonora.damico');
+INSERT INTO canale VALUES ('marco.ferretti');
+INSERT INTO canale VALUES ('silvia.monti');
+INSERT INTO canale VALUES ('andrea.palazzi');
+INSERT INTO canale VALUES ('valentina.battaglia');
+INSERT INTO canale VALUES ('gianni.moretti');
+INSERT INTO canale VALUES ('francesca.ferri');
+INSERT INTO canale VALUES ('luca.ricci');
+INSERT INTO canale VALUES ('anna.martini');
+INSERT INTO canale VALUES ('marco.rossi');
+INSERT INTO canale VALUES ('elena.galli');
+INSERT INTO canale VALUES ('ninja');
+INSERT INTO canale VALUES ('shroud');
+INSERT INTO canale VALUES ('tfue');
+INSERT INTO canale VALUES ('xqcow');
+INSERT INTO canale VALUES ('lirik');
+
+INSERT INTO subscription VALUES ('oskar.heise', 'ninja', 
+CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '1 month', 4.99);
+
+
+INSERT INTO donazione VALUES ('oskar.heise', 
+'tfue', 'Evvai', 9.99);
+
+INSERT INTO guarda VALUES ('ajkdsfh7819',
+'www.twitch.tv/videos/1887789454');
+
+INSERT INTO visualizza VALUES ('www.twitch.tv/videos/1887789454',
+'oskar.heise');
+
+INSERT INTO segue VALUES ('oskar.heise',
+'ninja');
+INSERT INTO segue VALUES ('oskar.heise',
+'shroud');
+INSERT INTO segue VALUES ('oskar.heise',
+'tfue');
+INSERT INTO segue VALUES ('oskar.heise',
+'lirik');
+INSERT INTO segue VALUES ('oskar.heise',
+'xqcow');
+INSERT INTO segue VALUES ('oskar.heise',
+'francesca.ferri');
+INSERT INTO segue VALUES ('oskar.heise',
+'eleonora.damico');
+INSERT INTO segue VALUES ('oskar.heise',
+'andrea.palazzi');
+INSERT INTO segue VALUES ('oskar.heise',
+'giulia.palumbo');
+INSERT INTO segue VALUES ('oskar.heise',
+'simona.ricci');
+\end{lstlisting}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Qualche operazione di cancellazione e modifica per verificare i vincoli e gli effetti causati da operazioni su chiavi esterne}
+
+\begin{lstlisting}
+UPDATE utente
+SET username = 'ninjaTwitch'
+WHERE username = 'ninja';
+
+UPDATE utente
+SET username = 'OskarConLaK'
+WHERE username = 'oskar.heise';
+
+UPDATE utente
+SET quantitaBit = 100
+WHERE username = 'OskarConLaK';
+\end{lstlisting}
+
+
+
+
+\section{Extra}
+\subsection*{Classifica dei content creator più seguiti}
+\begin{lstlisting}
+SELECT DENSE_RANK() OVER(ORDER BY COUNT(*) DESC) AS Classifica, 
+u.username AS username, COUNT(*) as follower
+FROM utente u JOIN follower f ON f.follower =  s.username
+GROUP BY s.username
+LIMIT 25;
+\end{lstlisting}
